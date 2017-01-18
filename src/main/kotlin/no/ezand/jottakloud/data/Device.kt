@@ -8,4 +8,6 @@ data class Device(val name: String,
                   val type: String,
                   val sid: UUID,
                   val size: Long,
-                  val modified: String?)
+                  val modified: String?,
+                  val user: String?,
+                  @JsonProperty("mountPoints") val mountPoints: List<MountPoint>?)
