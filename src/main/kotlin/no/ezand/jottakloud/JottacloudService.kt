@@ -1,6 +1,7 @@
 package no.ezand.jottakloud
 
 import com.fasterxml.jackson.databind.DeserializationFeature
+import com.fasterxml.jackson.databind.PropertyNamingStrategy
 import com.fasterxml.jackson.dataformat.xml.JacksonXmlModule
 import com.fasterxml.jackson.dataformat.xml.XmlMapper
 import com.fasterxml.jackson.module.kotlin.KotlinModule
@@ -16,6 +17,7 @@ class JottacloudService(baseUrl: URL, authorization: JottacloudAuthorization) {
             .registerModule(KotlinModule())
             .registerModule(JacksonXmlModule())
             .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+            .setPropertyNamingStrategy(PropertyNamingStrategy.KEBAB_CASE)
 
     private val urlUser = "$baseUrl/${authorization.username}"
     private val basicAuthorization = BasicAuthorization(authorization.username, authorization.password)
