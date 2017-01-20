@@ -4,12 +4,15 @@ import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.PropertyNamingStrategy
 import com.fasterxml.jackson.dataformat.xml.JacksonXmlModule
 import com.fasterxml.jackson.dataformat.xml.XmlMapper
+import com.fasterxml.jackson.datatype.joda.JodaModule
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import khttp.get
 import khttp.structures.authorization.BasicAuthorization
 import no.ezand.jottakloud.data.Device
 import no.ezand.jottakloud.data.MountPoint
 import no.ezand.jottakloud.data.User
+import no.ezand.jottakloud.deserializers.JottacloudDateTimeDeserializer
+import org.joda.time.DateTime
 import org.slf4j.LoggerFactory
 import java.net.URL
 
@@ -19,6 +22,7 @@ class JottacloudService(baseUrl: URL, authorization: JottacloudAuthorization) {
     private val xmlMapper = XmlMapper()
             .registerModule(KotlinModule())
             .registerModule(JacksonXmlModule())
+            .registerModule(JodaModule().addDeserializer(DateTime::class.java, JottacloudDateTimeDeserializer()))
             .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
             .setPropertyNamingStrategy(PropertyNamingStrategy.KEBAB_CASE)
 

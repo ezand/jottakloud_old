@@ -27,10 +27,10 @@ open class JottakloudApp {
         val user = jottacloudService.getUser()
         println("User: $user")
 
-        val device = jottacloudService.getDevice((user.devices.find { d -> d.name == "Jotta" })!!.name)
+        val device = jottacloudService.getDevice((user.devices!!.find { d -> d.name == "Jotta" })!!.name)
         println("Device: $device")
 
-        val mountPoint = jottacloudService.getMountPoint(device.name, device.mountPoints!!.first().name)
+        val mountPoint = jottacloudService.getMountPoint(device.name, device.mountPoints!!.last().name)
         println("MountPoint: $mountPoint")
     }
 }

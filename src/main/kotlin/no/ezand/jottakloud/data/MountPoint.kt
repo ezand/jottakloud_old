@@ -1,9 +1,13 @@
 package no.ezand.jottakloud.data
 
+import com.fasterxml.jackson.annotation.JsonFormat
+import org.joda.time.DateTime
+
 data class MountPoint(val name: String,
                       val size: Long,
-                      val modified: String?,
+                      val modified: DateTime?,
                       val path: String?,
                       val abspath: String?,
                       val device: String?,
-                      val user: String?)
+                      val user: String?,
+                      val files: List<File>?)

@@ -12,4 +12,4 @@ data class User(val username: String,
                 val quotaWriteLocked: Boolean,
                 val enableSync: Boolean,
                 val enableFoldershare: Boolean,
-                val devices: List<Device>)
+                val devices: List<Device>?)
