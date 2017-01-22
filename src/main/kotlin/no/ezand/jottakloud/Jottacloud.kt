@@ -8,17 +8,16 @@ import com.fasterxml.jackson.datatype.joda.JodaModule
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import khttp.get
 import khttp.structures.authorization.BasicAuthorization
-import no.ezand.jottakloud.data.Device
-import no.ezand.jottakloud.data.MountPoint
-import no.ezand.jottakloud.data.User
+import no.ezand.jottakloud.data.*
 import no.ezand.jottakloud.deserializers.JottacloudDateTimeDeserializer
 import org.joda.time.DateTime
 import org.slf4j.LoggerFactory
+import java.io.InputStream
 import java.net.URL
 
 // TODO handle notfound etc. and error handling in general
-class JottacloudService(baseUrl: URL, authorization: JottacloudAuthorization) {
-    private val logger = LoggerFactory.getLogger(JottacloudService::class.java)
+class Jottacloud(baseUrl: URL, authorization: JottacloudAuthorization) {
+    private val logger = LoggerFactory.getLogger(Jottacloud::class.java)
     private val xmlMapper = XmlMapper()
             .registerModule(KotlinModule())
             .registerModule(JacksonXmlModule())
@@ -51,5 +50,28 @@ class JottacloudService(baseUrl: URL, authorization: JottacloudAuthorization) {
 
         val xml = get(url, auth = basicAuthorization).text
         return xmlMapper.readValue(xml, MountPoint::class.java)
+    }
+
+    fun getFolder(deviceName: String, mountPointName: String, path: String): FolderDetails {
+        val url = "$urlUser/$deviceName/$mountPointName/$path"
+        logger.debug("Getting folder: '$deviceName' -> '$mountPointName' -> '$path': $url")
+
+        val xml = get(url, auth = basicAuthorization).text
+        return xmlMapper.readValue(xml, FolderDetails::class.java)
+    }
+
+    fun getFile(deviceName: String, mountPointName: String, path: String): FileDetails {
+        val url = "$urlUser/$deviceName/$mountPointName/$path"
+        logger.debug("Getting file: '$deviceName' -> '$mountPointName' -> '$path': $url")
+
+        val xml = get(url, auth = basicAuthorization).text
+        return xmlMapper.readValue(xml, FileDetails::class.java)
+    }
+
+    fun downloadFile(deviceName: String, mountPointName: String, path: String): InputStream {
+        val url = "$urlUser/$deviceName/$mountPointName/$path?mode=bin"
+        logger.debug("Getting file: '$deviceName' -> '$mountPointName' -> '$path': $url")
+
+        return get(url, auth = basicAuthorization, stream = true).raw
     }
 }

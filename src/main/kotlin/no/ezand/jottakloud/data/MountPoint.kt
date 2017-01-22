@@ -10,4 +10,5 @@ data class MountPoint(val name: String,
                       val abspath: String?,
                       val device: String?,
                       val user: String?,
-                      val files: List<File>?)
+                      val files: List<File>?,
+                      val folders: List<Folder>?)

@@ -22,16 +22,25 @@ open class JottakloudApp {
         val baseUrl = URL("$protocol://$host:$port${if (apiPath.isNullOrEmpty()) "" else "/$apiPath" }")
         val authorization = JottacloudAuthorization(username, password)
 
-        val jottacloudService = JottacloudService(baseUrl, authorization)
+        val jottacloud = Jottacloud(baseUrl, authorization)
 
-        val user = jottacloudService.getUser()
+        val user = jottacloud.getUser()
         println("User: $user")
 
-        val device = jottacloudService.getDevice((user.devices!!.find { d -> d.name == "Jotta" })!!.name)
+        val device = jottacloud.getDevice((user.devices!!.find { d -> d.name == "Jotta" })!!.name)
         println("Device: $device")
 
-        val mountPoint = jottacloudService.getMountPoint(device.name, device.mountPoints!!.last().name)
+        val mountPoint = jottacloud.getMountPoint(device.name, device.mountPoints!!.find { m -> m.name == "Photos" }!!.name)
         println("MountPoint: $mountPoint")
+
+        val folder = jottacloud.getFolder(device.name, device.mountPoints.find { m -> m.name == "Photos" }!!.name, "2017/01")
+        println("Folder: $folder")
+
+        val file = jottacloud.getFile(device.name, device.mountPoints.find { m -> m.name == "Photos" }!!.name, "2017/01/22/1481270269066.jpg")
+        println("File: $file")
+
+        val download = jottacloud.downloadFile(device.name, device.mountPoints.find { m -> m.name == "Photos" }!!.name, "2017/01/22/1481270269066.jpg")
+        println("Download: ${download.readBytes(file.currentRevision.size.toInt()).size}")
     }
 }
 
