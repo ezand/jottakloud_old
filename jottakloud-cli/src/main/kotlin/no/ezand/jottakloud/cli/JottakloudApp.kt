@@ -22,6 +22,7 @@ open class JottakloudApp {
 
         val username = environment.getProperty("jottacloud.username")
         val password = environment.getProperty("jottacloud.password")
+        val action = environment.getProperty("action")
         val protocol = environment.getProperty("jottacloud.protocol", "https")
         val host = environment.getProperty("jottacloud.host", "www.jottacloud.com")
         val apiPath = environment.getProperty("jottacloud.apipath", "jfs")
@@ -31,27 +32,34 @@ open class JottakloudApp {
 
         val jottacloud = Jottacloud(baseUrl, authorization)
 
-        val user = jottacloud.getUser()
-        println("User: $user")
-
-        val device = jottacloud.getDevice((user.devices!!.find { d -> d.name == "Jotta" })!!.name)
-        println("Device: $device")
-
-        val mountPoint = jottacloud.getMountPoint(device.name, device.mountPoints!!.find { m -> m.name == "Photos" }!!.name)
-        println("MountPoint: $mountPoint")
-
-        val folder = jottacloud.getFolder(device.name, device.mountPoints!!.find { m -> m.name == "Photos" }!!.name, "2017/01")
-        println("Folder: $folder")
-
-        val file = jottacloud.getFile(device.name, device.mountPoints!!.find { m -> m.name == "Photos" }!!.name, "2017/01/22/1481270269066.jpg")
-        println("File: $file")
-
-        val download = jottacloud.downloadFile(device.name, device.mountPoints!!.find { m -> m.name == "Photos" }!!.name, "2017/01/22/1481270269066.jpg")
-        println("Download: ${download.readBytes(file.currentRevision.size.toInt()).size}")
+        when (action) {
+            "user" -> println("User: ${jottacloud.getUser()}")
+            "device" -> {
+                val device = environment.getProperty("device")
+                println("Device: ${jottacloud.getDevice(device)}")
+            }
+            "mountPoint" -> {
+                val device = environment.getProperty("device")
+                val mountPoint = environment.getProperty("mountPoint")
+                println(jottacloud.getMountPoint(device, mountPoint))
+            }
+            "folder" -> {
+                val device = environment.getProperty("device")
+                val mountPoint = environment.getProperty("mountPoint")
+                val path = environment.getProperty("path")
+                println("Folder ${jottacloud.getFolder(device, mountPoint, path)}")
+            }
+            "file" -> {
+                val device = environment.getProperty("device")
+                val mountPoint = environment.getProperty("mountPoint")
+                val path = environment.getProperty("path")
+                println("File ${jottacloud.getFile(device, mountPoint, path)}")
+            }
+        }
     }
 
     fun assertParameters(environment: Environment) {
-        val missingParams = listOf("jottacloud.username", "jottacloud.password")
+        val missingParams = listOf("jottacloud.username", "jottacloud.password", "action")
                 .map { it to environment.containsProperty(it) }
                 .toMap()
                 .filterValues { it.not() }
