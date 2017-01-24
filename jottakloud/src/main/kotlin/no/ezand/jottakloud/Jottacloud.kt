@@ -8,16 +8,17 @@ import com.fasterxml.jackson.datatype.joda.JodaModule
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import khttp.get
 import khttp.structures.authorization.BasicAuthorization
+import mu.KLogging
 import no.ezand.jottakloud.data.*
 import no.ezand.jottakloud.deserializers.JottacloudDateTimeDeserializer
 import org.joda.time.DateTime
-import org.slf4j.LoggerFactory
 import java.io.InputStream
 import java.net.URL
 
 // TODO handle notfound etc. and error handling in general
 class Jottacloud(baseUrl: URL, authorization: JottacloudAuthorization) {
-    private val logger = LoggerFactory.getLogger(Jottacloud::class.java)
+    companion object : KLogging()
+
     private val xmlMapper = XmlMapper()
             .registerModule(KotlinModule())
             .registerModule(JacksonXmlModule())
@@ -30,7 +31,7 @@ class Jottacloud(baseUrl: URL, authorization: JottacloudAuthorization) {
     private val basicAuthorization = BasicAuthorization(authorization.username, authorization.password)
 
     fun getUser(): User {
-        logger.debug("Getting user: $urlUser")
+        logger.debug { "Getting user: $urlUser" }
 
         val xml = get(urlUser, auth = basicAuthorization).text
         return xmlMapper.readValue(xml, User::class.java)
@@ -38,7 +39,7 @@ class Jottacloud(baseUrl: URL, authorization: JottacloudAuthorization) {
 
     fun getDevice(deviceName: String): Device {
         val url = "$urlUser/$deviceName"
-        logger.debug("Getting device '$deviceName': $url")
+        logger.debug { "Getting device '$deviceName': $url" }
 
         val xml = get(url, auth = basicAuthorization).text
         return xmlMapper.readValue(xml, Device::class.java)
@@ -46,7 +47,7 @@ class Jottacloud(baseUrl: URL, authorization: JottacloudAuthorization) {
 
     fun getMountPoint(deviceName: String, mountPointName: String): MountPoint {
         val url = "$urlUser/$deviceName/$mountPointName"
-        logger.debug("Getting mount point: '$deviceName' -> '$mountPointName': $url")
+        logger.debug { "Getting mount point: '$deviceName' -> '$mountPointName': $url" }
 
         val xml = get(url, auth = basicAuthorization).text
         return xmlMapper.readValue(xml, MountPoint::class.java)
@@ -54,7 +55,7 @@ class Jottacloud(baseUrl: URL, authorization: JottacloudAuthorization) {
 
     fun getFolder(deviceName: String, mountPointName: String, path: String): FolderDetails {
         val url = "$urlUser/$deviceName/$mountPointName/$path"
-        logger.debug("Getting folder: '$deviceName' -> '$mountPointName' -> '$path': $url")
+        logger.debug { "Getting folder: '$deviceName' -> '$mountPointName' -> '$path': $url" }
 
         val xml = get(url, auth = basicAuthorization).text
         return xmlMapper.readValue(xml, FolderDetails::class.java)
@@ -62,7 +63,7 @@ class Jottacloud(baseUrl: URL, authorization: JottacloudAuthorization) {
 
     fun getFile(deviceName: String, mountPointName: String, path: String): FileDetails {
         val url = "$urlUser/$deviceName/$mountPointName/$path"
-        logger.debug("Getting file: '$deviceName' -> '$mountPointName' -> '$path': $url")
+        logger.debug { "Getting file: '$deviceName' -> '$mountPointName' -> '$path': $url" }
 
         val xml = get(url, auth = basicAuthorization).text
         return xmlMapper.readValue(xml, FileDetails::class.java)
@@ -70,7 +71,7 @@ class Jottacloud(baseUrl: URL, authorization: JottacloudAuthorization) {
 
     fun downloadFile(deviceName: String, mountPointName: String, path: String): InputStream {
         val url = "$urlUser/$deviceName/$mountPointName/$path?mode=bin"
-        logger.debug("Getting file: '$deviceName' -> '$mountPointName' -> '$path': $url")
+        logger.debug { "Getting file: '$deviceName' -> '$mountPointName' -> '$path': $url" }
 
         return get(url, auth = basicAuthorization, stream = true).raw
     }

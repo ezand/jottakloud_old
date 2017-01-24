@@ -1,0 +1,8 @@
+dependencies {
+    compile 'khttp:khttp:0.1.0'
+    compile "org.codehaus.woodstox:woodstox-core-asl:4.4.1"
+    compile "com.fasterxml.jackson.module:jackson-module-kotlin:2.8.6"
+    compile "com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.8.6"
+    compile "com.fasterxml.jackson.datatype:jackson-datatype-joda:2.8.6"
+    compile "com.github.debop:koda-time:1.0.0"
+}
