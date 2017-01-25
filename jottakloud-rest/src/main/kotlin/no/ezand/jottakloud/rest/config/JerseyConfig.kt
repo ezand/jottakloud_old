@@ -1,4 +1,4 @@
-package no.ezand.jottakloud.rest
+package no.ezand.jottakloud.rest.config
 
 import no.ezand.jottakloud.rest.endpoints.UserEndpoint
 import org.glassfish.jersey.server.ResourceConfig

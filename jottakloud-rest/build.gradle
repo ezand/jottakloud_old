@@ -16,4 +16,5 @@ dependencies {
         exclude module: "spring-boot-starter-tomcat"
     }
     compile("org.springframework.boot:spring-boot-starter-undertow:$spring_boot_version")
+    compile("org.springframework.boot:spring-boot-starter-security:$spring_boot_version")
 }
