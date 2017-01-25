@@ -1,0 +1,19 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:$spring_boot_version")
+    }
+}
+
+apply plugin: 'org.springframework.boot'
+
+dependencies {
+    compile project(':jottakloud')
+
+    compile("org.springframework.boot:spring-boot-starter-jersey:$spring_boot_version") {
+        exclude module: "spring-boot-starter-tomcat"
+    }
+    compile("org.springframework.boot:spring-boot-starter-undertow:$spring_boot_version")
+}

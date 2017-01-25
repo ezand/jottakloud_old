@@ -9,8 +9,9 @@ import org.springframework.context.annotation.Bean
 import org.springframework.core.env.Environment
 import java.net.URL
 
+// TODO suppress logging of app started
 @SpringBootApplication
-open class JottakloudApp {
+open class JottakloudCli {
     @Bean
     open fun init(ctx: ApplicationContext) = CommandLineRunner {
         val environment = ctx.environment
@@ -72,5 +73,5 @@ open class JottakloudApp {
 }
 
 fun main(args: Array<String>) {
-    SpringApplication.run(JottakloudApp::class.java, *args)
+    SpringApplication.run(JottakloudCli::class.java, *args)
 }
