@@ -17,7 +17,7 @@ import java.io.InputStream
 import java.net.URL
 import java.net.URLEncoder
 
-class Jottacloud(val baseUrl: URL, authorization: JottacloudAuthorization) {
+class Jottacloud(val baseUrl: URL) {
     companion object : KLogging()
 
     private val xmlMapper = XmlMapper()
@@ -27,55 +27,57 @@ class Jottacloud(val baseUrl: URL, authorization: JottacloudAuthorization) {
             .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
             .setPropertyNamingStrategy(PropertyNamingStrategy.KEBAB_CASE)
 
-    private val user = authorization.username
-    private val basicAuthorization = BasicAuthorization(authorization.username, authorization.password)
 
-    fun getUser(): User? {
-        val url = buildUrl(user)
+    fun getUser(auth: JottacloudAuthentication): User? {
+        val url = buildUrl(auth.username)
         logger.debug { "Getting user: $url" }
 
-        val response = get(url, auth = basicAuthorization)
+        val response = get(url, auth = auth.basicAuth())
         return objectOrNull(response)
     }
 
-    fun getDevice(deviceName: String): Device? {
-        val url = buildUrl("$user/$deviceName")
+    fun getDevice(auth: JottacloudAuthentication, deviceName: String): Device? {
+        val url = buildUrl("${auth.username}/$deviceName")
         logger.debug { "Getting device '$deviceName': $url" }
 
-        val response = get(url, auth = basicAuthorization)
+        val response = get(url, auth = auth.basicAuth())
         return objectOrNull(response)
     }
 
-    fun getMountPoint(deviceName: String, mountPointName: String): MountPoint? {
-        val url = buildUrl("$user/$deviceName/$mountPointName")
+    fun getMountPoint(auth: JottacloudAuthentication, deviceName: String, mountPointName: String): MountPoint? {
+        val url = buildUrl("${auth.username}/$deviceName/$mountPointName")
         logger.debug { "Getting mount point: '$deviceName' -> '$mountPointName': $url" }
 
-        val response = get(url, auth = basicAuthorization)
+        val response = get(url, auth = auth.basicAuth())
         return objectOrNull(response)
     }
 
-    fun getFolder(deviceName: String, mountPointName: String, path: String): FolderDetails? {
-        val url = buildUrl("$user/$deviceName/$mountPointName/$path")
+    fun getFolder(auth: JottacloudAuthentication, deviceName: String, mountPointName: String, path: String): FolderDetails? {
+        val url = buildUrl("${auth.username}/$deviceName/$mountPointName/$path")
         logger.debug { "Getting folder: '$deviceName' -> '$mountPointName' -> '$path': $url" }
 
-        val response = get(url, auth = basicAuthorization)
+        val response = get(url, auth = auth.basicAuth())
         return objectOrNull(response)
     }
 
-    fun getFile(deviceName: String, mountPointName: String, path: String): FileDetails? {
-        val url = buildUrl("$user/$deviceName/$mountPointName/$path")
+    fun getFile(auth: JottacloudAuthentication, deviceName: String, mountPointName: String, path: String): FileDetails? {
+        val url = buildUrl("${auth.username}/$deviceName/$mountPointName/$path")
         logger.debug { "Getting file: '$deviceName' -> '$mountPointName' -> '$path': $url" }
 
-        val response = get(url, auth = basicAuthorization)
+        val response = get(url, auth = auth.basicAuth())
         return objectOrNull(response)
     }
 
-    fun downloadFile(deviceName: String, mountPointName: String, path: String): InputStream? {
-        val url = buildUrl("$user/$deviceName/$mountPointName/$path?mode=bin")
+    fun downloadFile(auth: JottacloudAuthentication, deviceName: String, mountPointName: String, path: String): InputStream? {
+        val url = buildUrl("${auth.username}/$deviceName/$mountPointName/$path?mode=bin")
         logger.debug { "Getting file: '$deviceName' -> '$mountPointName' -> '$path': $url" }
 
-        val response = get(url, auth = basicAuthorization)
+        val response = get(url, auth = auth.basicAuth())
         return streamOrNull(response)
+    }
+
+    private fun JottacloudAuthentication.basicAuth(): BasicAuthorization {
+        return BasicAuthorization(this.username, this.password)
     }
 
     private fun buildUrl(url: String): String {

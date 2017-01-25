@@ -1,0 +1,9 @@
+server:
+  port: "9000"
+
+jottacloud:
+  protocol: "https"
+  host: "www.jottacloud.com"
+  port: 443
+  apiPath: "/jfs"
+

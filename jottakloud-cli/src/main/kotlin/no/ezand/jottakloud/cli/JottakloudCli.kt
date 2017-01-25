@@ -1,5 +1,7 @@
-package no.ezand.jottakloud
+package no.ezand.jottakloud.cli
 
+import no.ezand.jottakloud.Jottacloud
+import no.ezand.jottakloud.JottacloudAuthentication
 import no.ezand.jottakloud.LogbackLogging.applyLogLevel
 import org.springframework.boot.CommandLineRunner
 import org.springframework.boot.SpringApplication
@@ -29,32 +31,32 @@ open class JottakloudCli {
         val apiPath = environment.getProperty("jottacloud.apipath", "jfs")
         val port = environment.getProperty("jottacloud.port", Int::class.java, 443)
         val baseUrl = URL("$protocol://$host:$port${if (apiPath.isNullOrEmpty()) "" else "/$apiPath"}")
-        val authorization = JottacloudAuthorization(username, password)
+        val authentication = JottacloudAuthentication(username, password)
 
-        val jottacloud = Jottacloud(baseUrl, authorization)
+        val jottacloud = Jottacloud(baseUrl)
 
         when (action) {
-            "user" -> println("User: ${jottacloud.getUser()}")
+            "user" -> println("User: ${jottacloud.getUser(authentication)}")
             "device" -> {
                 val device = environment.getProperty("device")
-                println("Device: ${jottacloud.getDevice(device)}")
+                println("Device: ${jottacloud.getDevice(authentication, device)}")
             }
             "mountPoint" -> {
                 val device = environment.getProperty("device")
                 val mountPoint = environment.getProperty("mountPoint")
-                println(jottacloud.getMountPoint(device, mountPoint))
+                println(jottacloud.getMountPoint(authentication, device, mountPoint))
             }
             "folder" -> {
                 val device = environment.getProperty("device")
                 val mountPoint = environment.getProperty("mountPoint")
                 val path = environment.getProperty("path")
-                println("Folder ${jottacloud.getFolder(device, mountPoint, path)}")
+                println("Folder ${jottacloud.getFolder(authentication, device, mountPoint, path)}")
             }
             "file" -> {
                 val device = environment.getProperty("device")
                 val mountPoint = environment.getProperty("mountPoint")
                 val path = environment.getProperty("path")
-                println("File ${jottacloud.getFile(device, mountPoint, path)}")
+                println("File ${jottacloud.getFile(authentication, device, mountPoint, path)}")
             }
         }
     }
