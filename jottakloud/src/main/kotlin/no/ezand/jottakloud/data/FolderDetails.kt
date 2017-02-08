@@ -9,6 +9,6 @@ data class FolderDetails(
         val time: DateTime,
         @JacksonXmlProperty(isAttribute = true) val name: String,
         val metadata: FolderMetadata,
-        val folders: List<Folder>?,
-        val files: List<File>?
+        val folders: List<Folder> = emptyList(),
+        val files: List<File> = emptyList()
 )

@@ -5,4 +5,5 @@ dependencies {
     compile "com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.8.6"
     compile "com.fasterxml.jackson.datatype:jackson-datatype-joda:2.8.6"
     compile "com.github.debop:koda-time:1.0.0"
+    compile("commons-codec:commons-codec:$commons_codec_version")
 }

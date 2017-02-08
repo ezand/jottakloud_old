@@ -27,7 +27,6 @@ class Jottacloud(val baseUrl: URL) {
             .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
             .setPropertyNamingStrategy(PropertyNamingStrategy.KEBAB_CASE)
 
-
     fun getUser(auth: JottacloudAuthentication): User? {
         val url = buildUrl(auth.username)
         logger.debug { "Getting user: $url" }
@@ -68,6 +67,27 @@ class Jottacloud(val baseUrl: URL) {
         return objectOrNull(response)
     }
 
+    fun getFiles(auth: JottacloudAuthentication, deviceName: String, mountPointName: String, path: String, recursive: Boolean = false): List<FileDetails> {
+        return getFiles(auth, deviceName, mountPointName, path, emptyList(), recursive)
+    }
+
+    private fun getFiles(auth: JottacloudAuthentication, deviceName: String, mountPointName: String, path: String, files: List<FileDetails>, recursive: Boolean): List<FileDetails> {
+        val folder = getFolder(auth, deviceName, mountPointName, path)
+        if (folder != null) {
+            val filesInFolder = folder.files.map { getFile(auth, deviceName, mountPointName, it.name) }.filterNotNull()
+
+            if (recursive) {
+                return folder.folders.fold(filesInFolder) { f, subFolder ->
+                    return getFiles(auth, deviceName, mountPointName, subFolder.name, f, recursive)
+                }
+            } else {
+                return filesInFolder
+            }
+        } else {
+            return files
+        }
+    }
+
     fun downloadFile(auth: JottacloudAuthentication, deviceName: String, mountPointName: String, path: String): InputStream? {
         val url = buildUrl("${auth.username}/$deviceName/$mountPointName/$path?mode=bin")
         logger.debug { "Getting file: '$deviceName' -> '$mountPointName' -> '$path': $url" }
@@ -89,8 +109,10 @@ class Jottacloud(val baseUrl: URL) {
     }
 
     inline private fun <reified T : Any> objectOrNull(response: Response): T? {
-        if (response.statusCode == 200)
+        if (response.statusCode == 200) {
+            println(response.text)
             return xmlMapper.readValue(response.text, T::class.java)
+        }
         else {
             logger.debug("Got status code ${response.statusCode}: ${response.text}")
             return null

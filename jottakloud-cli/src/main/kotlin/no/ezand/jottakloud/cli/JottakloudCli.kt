@@ -44,19 +44,26 @@ open class JottakloudCli {
             "mountPoint" -> {
                 val device = environment.getProperty("device")
                 val mountPoint = environment.getProperty("mountPoint")
-                println(jottacloud.getMountPoint(authentication, device, mountPoint))
+                println("MountPoint: ${jottacloud.getMountPoint(authentication, device, mountPoint)}")
             }
             "folder" -> {
                 val device = environment.getProperty("device")
                 val mountPoint = environment.getProperty("mountPoint")
                 val path = environment.getProperty("path")
-                println("Folder ${jottacloud.getFolder(authentication, device, mountPoint, path)}")
+                println("Folder: ${jottacloud.getFolder(authentication, device, mountPoint, path)}")
             }
             "file" -> {
                 val device = environment.getProperty("device")
                 val mountPoint = environment.getProperty("mountPoint")
                 val path = environment.getProperty("path")
-                println("File ${jottacloud.getFile(authentication, device, mountPoint, path)}")
+                println("File: ${jottacloud.getFile(authentication, device, mountPoint, path)}")
+            }
+            "files" -> {
+                val device = environment.getProperty("device")
+                val mountPoint = environment.getProperty("mountPoint")
+                val path = environment.getProperty("path")
+                val recursive = environment.getProperty("recursive", "false").toBoolean()
+                println("Files: ${jottacloud.getFiles(authentication, device, mountPoint, path, recursive)}")
             }
         }
     }
